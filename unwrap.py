@@ -15,11 +15,9 @@ charmap = [0x3d, 0x65, 0x85, 0xb3, 0x18, 0xdb, 0xe2, 0x87, 0xf1, 0x52, 0xab, 0x6
 
 def decode_base64_package(base64str):
 	base64dec = base64.decodestring(base64str)[20:] # we strip the first 20 chars (SHA1 hash, I don't bother checking it at the moment)
-	decoded = ''
-	for byte in range(0, len(base64dec)):
-		decoded += chr(charmap[ord(base64dec[byte])])
+	decoded = bytes(map(lambda b: charmap[b], base64dec))
 	return zlib.decompress(decoded)
-	
+
 
 sys.stderr.write("=== Oracle 10g/11g PL/SQL unwrapper 0.2 - by Niels Teusink - blog.teusink.net ===\n\n" )
 if len(sys.argv) < 2:
@@ -29,7 +27,7 @@ if len(sys.argv) < 2:
 infile = open(sys.argv[1])
 outfile = None
 if len(sys.argv) == 3:
-	outfile = open(sys.argv[2], 'w')
+	outfile = open(sys.argv[2], 'wb')
 
 lines = infile.readlines()
 for i in range(0, len(lines)):
@@ -44,6 +42,6 @@ for i in range(0, len(lines)):
 			base64str += lines[i+j]
 		base64str = base64str.replace("\n","")
 		if outfile:
-			outfile.write(decode_base64_package(base64str) + "\n")
+			outfile.write(decode_base64_package(base64str) + b'\n')
 		else:
-			print decode_base64_package(base64str)
+			print(decode_base64_package(base64str))
