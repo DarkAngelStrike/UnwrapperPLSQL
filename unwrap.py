@@ -14,6 +14,7 @@ import zlib
 import base64
 import hashlib
 import argparse
+import binascii
 
 
 charmap = [
@@ -39,6 +40,20 @@ class IntegrityException(Exception):
     Is raised when the wrapped procedure has an invalid checksum.
     '''
 
+    def __init__(self, expected: str, computed: str) -> None:
+        '''
+        Initialize the IntegrityException.
+
+        Parameters:
+            expected        The expected hash value in hex format
+            computed        The computed hash value in hex format
+
+        Returns:
+            None
+        '''
+        self.expected = expected
+        self.computed = computed
+        super().__init__()
 
 def decode_wrapped(base64str: str) -> str:
     '''
@@ -62,7 +77,7 @@ def decode_wrapped(base64str: str) -> str:
     checksum = hashlib.sha1(code).digest()
 
     if sha1 != checksum:
-        raise IntegrityException(f'Expected: {sha1} - Actual:{checksum}')
+        raise IntegrityException(binascii.hexlify(sha1).decode(), binascii.hexlify(checksum).decode())
 
     return zlib.decompress(code).decode()
 
@@ -117,8 +132,9 @@ try:
     main()
 
 except IntegrityException as e:
-    print('[-] Decoding the wrapped procedure creates an invalid checksum.')
-    print(f'[-] {e}')
+    print("[-] Decoding the wrapped procedure created an invalid checksum.")
+    print(f"[-]   Expected value: " + e.expected)
+    print(f"[-]   Computed value: " + e.computed)
 
 except Exception as e:
     print('[-] Something went wrong while unwrapping the wrapped procedure.')
