@@ -84,8 +84,7 @@ def decode_wrapped(base64str: str) -> str:
 
 def main() -> None:
     '''
-    Read a wrapped stored procedure from an Oracle SQL database and output the
-    decoded contents.
+    Read a wrapped Oracle 10g/11g PL/SQL procedure and output its decoded form.
 
     Parameters:
         None
@@ -93,7 +92,7 @@ def main() -> None:
     Returns:
         None
     '''
-    parser = argparse.ArgumentParser(description='''Oracle 10g/11g PL/SQL unwrapper 0.3 - by Niels Teusink & Tobias Neitzel''')
+    parser = argparse.ArgumentParser(description='''Oracle 10g/11g PL/SQL unwrapper v0.3 - by Niels Teusink & Tobias Neitzel''')
     parser.add_argument('infile', nargs='?', default=sys.stdin, type=argparse.FileType('r'), help='filepath (default: stdin)')
     args = parser.parse_args()
 
